@@ -1,0 +1,169 @@
+@import "tailwindcss";
+
+/* ========================================================
+   Apple-Inspired Glassmorphic Design System Tokens & Classes
+   ======================================================== */
+
+:root {
+  --font-sans: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.2);
+  --transition: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Modern Apple Dark Defaults */
+  --bg-primary: #0d0d0f;
+  --bg-secondary: #1c1c1e;
+  --bg-tertiary: #2c2c2e;
+  --bg-hover: #3a3a3c;
+  --text-primary: #f5f5f7;
+  --text-secondary: #a1a1a6;
+  --text-tertiary: #636366;
+  --border: #38383a;
+  --border-light: #2c2c2e;
+  --accent: #0a84ff;
+  --accent-hover: #409cff;
+  --accent-bg: rgba(10, 132, 255, 0.12);
+  --danger: #ff453a;
+  --danger-hover: #ff6961;
+  --success: #30d158;
+  --warning: #ffd60a;
+  --card-bg: #1c1c1e;
+  --card-border: #2c2c2e;
+  --modal-bg: #1c1c1e;
+  --modal-backdrop: rgba(0, 0, 0, 0.65);
+  --input-bg: #0d0d0f;
+  --input-border: #2c2c2e;
+  --input-focus: #0a84ff;
+  --scrollbar-thumb: #48484a;
+  --tag-bg: rgba(10, 132, 255, 0.12);
+  --tag-text: #0a84ff;
+}
+
+[data-theme="light"] {
+  --bg-primary: #f5f5f7;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f0f0f2;
+  --bg-hover: #e8e8ec;
+  --text-primary: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --text-tertiary: #aeaeb2;
+  --border: #d2d2d7;
+  --border-light: #e5e5ea;
+  --accent: #0071e3;
+  --accent-hover: #0077ed;
+  --accent-bg: rgba(0, 113, 227, 0.08);
+  --danger: #ff3b30;
+  --danger-hover: #ff453a;
+  --success: #34c759;
+  --warning: #ff9f0a;
+  --card-bg: #ffffff;
+  --card-border: #e5e5ea;
+  --modal-bg: #ffffff;
+  --modal-backdrop: rgba(0, 0, 0, 0.4);
+  --input-bg: #f5f5f7;
+  --input-border: #e5e5ea;
+  --input-focus: #0071e3;
+  --scrollbar-thumb: #c7c7cc;
+  --tag-bg: rgba(0, 113, 227, 0.1);
+  --tag-text: #0071e3;
+}
+
+[data-theme="dark"] {
+  --bg-primary: #0d0d0f;
+  --bg-secondary: #1c1c1e;
+  --bg-tertiary: #2c2c2e;
+  --bg-hover: #3a3a3c;
+  --text-primary: #f5f5f7;
+  --text-secondary: #a1a1a6;
+  --text-tertiary: #636366;
+  --border: #38383a;
+  --border-light: #2c2c2e;
+  --accent: #0a84ff;
+  --accent-hover: #409cff;
+  --accent-bg: rgba(10, 132, 255, 0.12);
+  --danger: #ff453a;
+  --danger-hover: #ff6961;
+  --success: #30d158;
+  --warning: #ffd60a;
+  --card-bg: #1c1c1e;
+  --card-border: #2c2c2e;
+  --modal-bg: #1c1c1e;
+  --modal-backdrop: rgba(0, 0, 0, 0.65);
+  --input-bg: #0d0d0f;
+  --input-border: #2c2c2e;
+  --input-focus: #0a84ff;
+  --scrollbar-thumb: #48484a;
+  --tag-bg: rgba(10, 132, 255, 0.12);
+  --tag-text: #0a84ff;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  transition: background-color var(--transition), color var(--transition);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
+
+/* Glassmorphism Classes */
+.glass-panel {
+  background: color-mix(in srgb, var(--card-bg) 75%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-light);
+}
+
+.glass-modal {
+  background: color-mix(in srgb, var(--modal-bg) 85%, transparent);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid var(--border-light);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+.glass-button {
+  background: color-mix(in srgb, var(--bg-secondary) 80%, transparent);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-light);
+  color: var(--text-primary);
+  transition: all var(--transition);
+}
+
+.glass-button:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.glass-pill {
+  background: color-mix(in srgb, var(--bg-tertiary) 70%, transparent);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-light);
+}
