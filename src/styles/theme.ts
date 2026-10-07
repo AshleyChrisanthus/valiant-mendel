@@ -1,9 +1,44 @@
-import type { ThemeTokens, ThemePreset, ThemeMode, CategoryColors, RgbColor, TagStyle } from '../types/theme';
+import type { ThemePreset, ThemeMode, RgbColor, TagStyle } from '../types/theme';
 
 export const THEME_KEY = 'corpcanvas_theme';
 export const ACTIVE_PRESET_KEY = 'corpcanvas_active_preset';
 export const CUSTOM_THEME_KEY = 'corpcanvas_custom_colors';
 export const TAG_COLORS_KEY = 'corpcanvas_tag_colors';
+
+const memoryStorage: Record<string, string> = {};
+
+export const safeStorage = {
+  getItem: (key: string): string | null => {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        return window.localStorage.getItem(key);
+      }
+    } catch {
+      // In-memory fallback
+    }
+    return memoryStorage[key] ?? null;
+  },
+  setItem: (key: string, val: string): void => {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.setItem(key, val);
+      }
+    } catch {
+      // In-memory fallback
+    }
+    memoryStorage[key] = val;
+  },
+  removeItem: (key: string): void => {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.removeItem(key);
+      }
+    } catch {
+      // In-memory fallback
+    }
+    delete memoryStorage[key];
+  }
+};
 
 export const THEME_PRESETS: ThemePreset[] = [
   {
@@ -254,12 +289,12 @@ export const THEME_PRESETS: ThemePreset[] = [
 ];
 
 export function getActivePreset(): ThemePreset {
-  const savedId = localStorage.getItem(ACTIVE_PRESET_KEY) || 'default';
+  const savedId = safeStorage.getItem(ACTIVE_PRESET_KEY) || 'default';
   return THEME_PRESETS.find(p => p.id === savedId) || THEME_PRESETS[0];
 }
 
 export function setActivePreset(presetId: string): void {
-  localStorage.setItem(ACTIVE_PRESET_KEY, presetId);
+  safeStorage.setItem(ACTIVE_PRESET_KEY, presetId);
   const mode = (document.documentElement.getAttribute('data-theme') || 'dark') as ThemeMode;
   applyPresetPaletteForMode(presetId, mode);
 }
@@ -275,7 +310,7 @@ export function applyPresetPaletteForMode(presetId: string, mode: ThemeMode): vo
     }
   });
 
-  const customStr = localStorage.getItem(CUSTOM_THEME_KEY);
+  const customStr = safeStorage.getItem(CUSTOM_THEME_KEY);
   if (customStr) {
     try {
       const customTokens = JSON.parse(customStr);
@@ -293,11 +328,11 @@ export function applyCustomThemeProperties(properties: Record<string, string>): 
   Object.entries(properties).forEach(([prop, val]) => {
     root.style.setProperty(prop, val);
   });
-  localStorage.setItem(CUSTOM_THEME_KEY, JSON.stringify(properties));
+  safeStorage.setItem(CUSTOM_THEME_KEY, JSON.stringify(properties));
 }
 
 export function clearCustomThemeProperties(): void {
-  localStorage.removeItem(CUSTOM_THEME_KEY);
+  safeStorage.removeItem(CUSTOM_THEME_KEY);
   const mode = (document.documentElement.getAttribute('data-theme') || 'dark') as ThemeMode;
   const active = getActivePreset();
   applyPresetPaletteForMode(active.id, mode);
@@ -360,7 +395,7 @@ export function getTagStyle(tag: string, customHex?: string): TagStyle {
 }
 
 export function initTheme(): void {
-  const savedTheme = (localStorage.getItem(THEME_KEY) || 'dark') as ThemeMode;
+  const savedTheme = (safeStorage.getItem(THEME_KEY) || 'dark') as ThemeMode;
   document.documentElement.setAttribute('data-theme', savedTheme);
   const active = getActivePreset();
   applyPresetPaletteForMode(active.id, savedTheme);

@@ -1,32 +1,64 @@
-import Dexie, { type EntityTable } from 'dexie';
+import Dexie, { type Table } from 'dexie';
 import type { CompanyHierarchyCanvas } from '../types/company';
 
-export const db = new Dexie('CorpCanvasDatabase') as Dexie & {
-  canvases: EntityTable<CompanyHierarchyCanvas, 'id'>;
-};
+export class CorpCanvasDatabase extends Dexie {
+  canvases!: Table<CompanyHierarchyCanvas, string>;
 
-// Schema definition
-db.version(1).stores({
-  canvases: 'id, name, companyName, source, createdAt, updatedAt'
-});
+  constructor() {
+    super('CorpCanvasDatabase');
+    this.version(1).stores({
+      canvases: 'id, name, companyName, source, createdAt, updatedAt'
+    });
+  }
+}
+
+export const db = new CorpCanvasDatabase();
+
+// In-memory fallback in case IndexedDB is restricted or disabled on file://
+const inMemoryCanvases = new Map<string, CompanyHierarchyCanvas>();
 
 export async function getAllCanvases(): Promise<CompanyHierarchyCanvas[]> {
-  return await db.canvases.orderBy('updatedAt').reverse().toArray();
+  try {
+    const list = await db.canvases.orderBy('updatedAt').reverse().toArray();
+    if (list && list.length > 0) {
+      list.forEach((c) => inMemoryCanvases.set(c.id, c));
+      return list;
+    }
+  } catch (err) {
+    console.warn('Dexie getAllCanvases error, falling back to in-memory store:', err);
+  }
+  return Array.from(inMemoryCanvases.values()).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 }
 
 export async function getCanvasById(id: string): Promise<CompanyHierarchyCanvas | undefined> {
-  return await db.canvases.get(id);
+  try {
+    const item = await db.canvases.get(id);
+    if (item) return item;
+  } catch (err) {
+    console.warn('Dexie getCanvasById error, falling back to in-memory store:', err);
+  }
+  return inMemoryCanvases.get(id);
 }
 
 export async function saveCanvas(canvas: CompanyHierarchyCanvas): Promise<string> {
-  const updatedCanvas = {
+  const updatedCanvas: CompanyHierarchyCanvas = {
     ...canvas,
     updatedAt: new Date().toISOString()
   };
-  await db.canvases.put(updatedCanvas);
-  return canvas.id;
+  inMemoryCanvases.set(updatedCanvas.id, updatedCanvas);
+  try {
+    await db.canvases.put(updatedCanvas);
+  } catch (err) {
+    console.warn('Dexie saveCanvas error (using in-memory fallback):', err);
+  }
+  return updatedCanvas.id;
 }
 
 export async function deleteCanvas(id: string): Promise<void> {
-  await db.canvases.delete(id);
+  inMemoryCanvases.delete(id);
+  try {
+    await db.canvases.delete(id);
+  } catch (err) {
+    console.warn('Dexie deleteCanvas error:', err);
+  }
 }

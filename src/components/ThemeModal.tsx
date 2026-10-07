@@ -15,7 +15,8 @@ import {
   applyPresetPaletteForMode,
   applyCustomThemeProperties,
   clearCustomThemeProperties,
-  THEME_KEY
+  THEME_KEY,
+  safeStorage
 } from '../styles/theme';
 import type { ThemeMode } from '../types/theme';
 
@@ -49,7 +50,7 @@ export const ThemeModal: React.FC<ThemeModalProps> = ({
   const handleModeToggle = (mode: ThemeMode) => {
     setCurrentMode(mode);
     document.documentElement.setAttribute('data-theme', mode);
-    localStorage.setItem(THEME_KEY, mode);
+    safeStorage.setItem(THEME_KEY, mode);
     applyPresetPaletteForMode(activePresetId, mode);
     onThemeChanged?.();
   };

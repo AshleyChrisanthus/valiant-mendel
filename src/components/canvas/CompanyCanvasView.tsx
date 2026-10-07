@@ -42,6 +42,7 @@ import {
   companyToCanvasGraph,
   applyDagreLayout
 } from '../../utils/companyCanvas';
+import { CURATED_COMPANY_PROFILES } from '../../services/curatedData';
 import type {
   UnifiedCompanyData,
   CompanyHierarchyCanvas,
@@ -82,7 +83,6 @@ export const CompanyCanvasView: React.FC = () => {
 
   const loadDefaultSample = async () => {
     // Import curated Disney graph on first run
-    const { CURATED_COMPANY_PROFILES } = await import('../../services/curatedData');
     const initialGraph = companyToCanvasGraph(CURATED_COMPANY_PROFILES.disney, 'LR');
 
     const defaultCanvas: CompanyHierarchyCanvas = {
